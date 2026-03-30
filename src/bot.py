@@ -24,7 +24,7 @@ def send_notification(message):
         print(f"Failed to send notification: {response.text}")
         sys.exit(1)
         
-  def format_message(project, branch, date, pr_url, repo_url):
+  def format_message():
     
     message = (
         f"<b>Pipeline Report</b>\n\n"
