@@ -43,3 +43,33 @@ def get_version():
 if __name__ == "__main__":
     test_message = "Test notification from DevOps pipeline"
     send_notification(test_message)
+
+def get_version():
+    """Return current version of the bot."""
+    return "1.0.1"
+
+
+
+
+def format_message(project, branch, date, pr_url, repo_url):
+    
+    message = (
+        f"<b>Pipeline Report</b>
+
+"
+        f"<b>Project:</b> {project}
+"
+        f"<b>Branch:</b> {branch}
+"
+        f"<b>Date:</b> {date}
+
+"
+        f"<b>Links</b>
+"
+        f"<b>Pull Request:</b> {pr_url}
+"
+        f"<b>Repository:</b> {repo_url}
+"
+    )
+    return message
+
