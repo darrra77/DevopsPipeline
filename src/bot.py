@@ -27,3 +27,8 @@ def send_notification(message):
 if __name__ == "__main__":
     test_message = "Test notification from DevOps pipeline"
     send_notification(test_message)
+
+def get_version():
+    """Return current version of the bot."""
+    return "1.0.1"
+
