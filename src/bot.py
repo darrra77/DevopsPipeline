@@ -43,3 +43,21 @@ def get_version():
 if __name__ == "__main__":
     test_message = "Test notification from DevOps pipeline"
     send_notification(test_message)
+
+
+
+def validate_environment():
+  
+    required_vars = ["TELEGRAM_BOT_TOKEN", "TELEGRAM_CHAT_ID"]
+    missing = []
+
+    for var in required_vars:
+        if not os.getenv(var):
+            missing.append(var)
+
+    if missing:
+        print(f"Error: missing environment variables: {, .join(missing)}")
+        return False
+
+    return True
+
