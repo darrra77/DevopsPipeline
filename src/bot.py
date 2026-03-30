@@ -35,8 +35,10 @@ def send_notification(message):
         f"<b>Pull Request:</b> {pr_url}\n"
         f"<b>Repository:</b> {repo_url}\n"
     )
-    return message      
-
+    return message  
+      
+def get_version():
+    return "1.0.1"
     
 if __name__ == "__main__":
     test_message = "Test notification from DevOps pipeline"
