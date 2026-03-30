@@ -13,7 +13,8 @@ def format_message(project, branch, date, pr_url, repo_url):
         f"<b>Repository:</b> {repo_url}\n"
     )
     return message
-    
+
+
 def send_notification(message):
     bot_token = os.getenv("TELEGRAM_BOT_TOKEN")
     chat_id = os.getenv("TELEGRAM_CHAT_ID")
