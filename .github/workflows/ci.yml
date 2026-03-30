@@ -1,0 +1,76 @@
+name: Quality & Telegram
+
+on:
+  pull_request:
+    types: [closed]
+    branches:
+      - dev
+
+jobs:
+  
+  code-quality:
+   
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    name: "Code Quality Check (SonarCloud)"
+
+    steps:
+      
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  
+
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@v3
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+      - name: Upload SonarCloud report as artifact
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: sonar-report
+          path: .scannerwork/report-task.txt
+          retention-days: 30
+
+  notify-telegram:
+    needs: code-quality
+    runs-on: ubuntu-latest
+    if: always() && github.event.pull_request.merged == true
+    name: "Telegram Notification"
+
+    steps:
+      - name: Send Telegram Notification
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+      
+         BRANCH="${{ github.head_ref }}"
+          REPO="${{ github.event.repository.full_name }}"
+          REPO_URL="${{ github.event.repository.html_url }}"
+          PR_URL="${{ github.event.pull_request.html_url }}"
+          PR_TITLE="${{ github.event.pull_request.title }}"
+          MERGE_DATE=$(date +"%Y-%m-%d %H:%M:%S")
+          QUALITY_STATUS="${{ needs.code-quality.result }}"
+
+          MESSAGE="<b>DEVOPS PIPELINE NOTIFICATION</b>
+
+          <b>Новый выпуск изменений</b>
+          <b>Проект:</b> ${REPO}
+          <b>Дата:</b> ${MERGE_DATE}
+
+          <b>Информация о мерже</b>
+          <b>Ветка:</b> ${BRANCH}
+          <b>PR:</b> ${PR_TITLE}
+          <b>Проверка качества:</b> ${QUALITY_STATUS}
+
+          <b>Ссылки</b>
+          <b>Pull Request:</b> ${PR_URL}
+          <b>Репозиторий:</b> ${REPO_URL}"
+       
+          curl -s -X POST "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage" \
+            -d "chat_id=${TELEGRAM_CHAT_ID}" \
+            -d "parse_mode=HTML" \
+            -d "text=${MESSAGE}"
